@@ -5,16 +5,21 @@ import ru.ranepa.repository.EmployeeRepository;
 import ru.ranepa.service.HRMService;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
-import java.time.format.DateTimeParseException;
 
 public class HrmApplication {
-    public static void main(String[] args) {
-        EmployeeRepository repository = new EmployeeRepository();
-        HRMService hrmService = new HRMService(repository);
-        Scanner scanner = new Scanner(System.in);
 
+    private final EmployeeRepository repository = new EmployeeRepository();
+    private final HRMService hrmService = new HRMService(repository);
+    private final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        new HrmApplication().run();
+    }
+
+    private void run() {
         while (true) {
             System.out.println("\n=== HRM System Menu ===");
             System.out.println("1. Show all employees");
@@ -35,36 +40,23 @@ public class HrmApplication {
             }
 
             switch (choice) {
-                case 1:
-                    showAllEmployees(hrmService);
-                    break;
-                case 2:
-                    addEmployee(scanner, hrmService);
-                    break;
-                case 3:
-                    deleteEmployee(scanner, hrmService);
-                    break;
-                case 4:
-                    findEmployeeById(scanner, hrmService);
-                    break;
-                case 5:
-                    findEmployeeByPosition(scanner, hrmService);
-                    break;
-                case 6:
-                    showStatistics(hrmService);
-                    break;
-                case 7:
+                case 1 -> showAllEmployees();
+                case 2 -> addEmployee();
+                case 3 -> deleteEmployee();
+                case 4 -> findEmployeeById();
+                case 5 -> findEmployeeByPosition();
+                case 6 -> showStatistics();
+                case 7 -> {
                     System.out.println("Goodbye!");
                     scanner.close();
                     return;
-
+                }
+                default -> System.out.println("Unknown option.");
             }
-
         }
-
     }
 
-    private static void findEmployeeByPosition(Scanner scanner, HRMService hrmService) {
+    private void findEmployeeByPosition() {
         System.out.print("Enter employee position: ");
         String position = scanner.nextLine();
 
@@ -74,13 +66,12 @@ public class HrmApplication {
             System.out.println("Employee not found.");
         } else {
             for (Employee employee : employees) {
-                    System.out.println(employee);
+                System.out.println(employee);
             }
-
         }
     }
 
-    private static void showAllEmployees(HRMService hrmService) {
+    private void showAllEmployees() {
         List<Employee> employees = hrmService.getAllEmployees();
         if (employees.isEmpty()) {
             System.out.println("No employees found.");
@@ -91,15 +82,14 @@ public class HrmApplication {
         }
     }
 
-    private static void addEmployee(Scanner scanner, HRMService hrmService) {
+    private void addEmployee() {
         try {
-            // имя
             System.out.print("Enter name: ");
             String name = scanner.nextLine();
-            // позиция
+
             System.out.print("Enter position: ");
             String position = scanner.nextLine();
-            // зп с проверкой на число и неотрицательность
+
             double salary;
             while (true) {
                 System.out.print("Enter salary: ");
@@ -109,12 +99,12 @@ public class HrmApplication {
                         System.out.println("Salary cannot be negative.");
                         continue;
                     }
-                    break; // всё ок — выходим из цикла
+                    break;
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid salary format.");
                 }
             }
-            // дата найма с проверкой формата
+
             LocalDate hireDate;
             while (true) {
                 System.out.print("Enter hire date (yyyy-mm-dd): ");
@@ -125,54 +115,41 @@ public class HrmApplication {
                     System.out.println("Invalid date format.");
                 }
             }
-            // добавляем сотрудника
+
             Employee employee = hrmService.addEmployee(name, position, salary, hireDate);
             System.out.println("Employee added successfully with ID: " + employee.getId());
         } catch (Exception e) {
             System.out.println("Error while adding employee: " + e.getMessage());
-
         }
-
     }
 
-    private static void deleteEmployee(Scanner scanner, HRMService hrmService) {
+    private void deleteEmployee() {
         try {
             System.out.print("Enter employee ID to delete: ");
             Long id = Long.parseLong(scanner.nextLine());
             boolean deleted = hrmService.deleteEmployee(id);
-            if (deleted) {
-                System.out.println("Employee deleted.");
-            } else {
-                System.out.println("Employee not found.");
-            }
+            System.out.println(deleted ? "Employee deleted." : "Employee not found.");
         } catch (NumberFormatException e) {
             System.out.println("Invalid ID format.");
         }
     }
 
-    private static void findEmployeeById(Scanner scanner, HRMService hrmService) {
+    private void findEmployeeById() {
         try {
             System.out.print("Enter employee ID: ");
             Long id = Long.parseLong(scanner.nextLine());
             Employee employee = hrmService.getEmployeeById(id);
-            if (employee != null) {
-                System.out.println(employee);
-            } else {
-                System.out.println("Employee not found.");
-            }
+            System.out.println(employee != null ? employee : "Employee not found.");
         } catch (NumberFormatException e) {
             System.out.println("Invalid ID format.");
         }
     }
 
-    private static void showStatistics(HRMService hrmService) {
+    private void showStatistics() {
         double averageSalary = hrmService.calculateAverageSalary();
         Employee topPaidEmployee = hrmService.findTopPaidEmployee();
+
         System.out.println("Average salary: " + averageSalary);
-        if (topPaidEmployee != null) {
-            System.out.println("Top paid employee: " + topPaidEmployee);
-        } else {
-            System.out.println("No employees in system.");
-        }
+        System.out.println(topPaidEmployee != null ? "Top paid employee: " + topPaidEmployee : "No employees in system.");
     }
 }
