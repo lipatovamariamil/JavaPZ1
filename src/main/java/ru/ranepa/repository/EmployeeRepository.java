@@ -1,37 +1,33 @@
 package ru.ranepa.repository;
 
 import ru.ranepa.model.Employee;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeeRepository {
-    private HashMap<Long, Employee> employees = new HashMap<>();
+    private final Map<Long, Employee> storage = new HashMap<>();
+    private long currentId = 1;
 
-    public boolean save (Employee employee) {
-        long id = employee.getId();
-        employees.put(id, employee);
-        return false;
+    public Employee save(Employee employee) {
+        if (employee.getId() == null) {
+            employee.setId(currentId++);
+        }
+        storage.put(employee.getId(), employee);
+        return employee;
     }
 
     public List<Employee> findAll() {
-        return employees.values()
-                .stream()
-                .toList();
+        return new ArrayList<>(storage.values());
     }
 
-    public Employee findById(long id) {
-        if (!employees.containsKey(id)){
-            throw new IllegalArgumentException("Такого сотрудника нет");
-        }
-        return employees.get(id);
+    public Employee findById(Long id) {
+        return storage.get(id);
     }
+
     public boolean delete(Long id) {
-        if (!employees.containsKey(id)) {
-            System.out.println("Такого сотрудника нет");
-            return false;
-        }
-        employees.remove(id);
-        return true;
+        return storage.remove(id) != null;
     }
 }
-
