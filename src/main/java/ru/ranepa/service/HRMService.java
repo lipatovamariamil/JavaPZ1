@@ -31,6 +31,7 @@ public class HRMService {
         return employeeRepository.findById(id);
     }
 
+
     public boolean deleteEmployee(Long id) {
         return employeeRepository.delete(id);
     }
@@ -54,22 +55,10 @@ public class HRMService {
                 .orElse(null);
     }
 
-    public List<Employee> findByPosition(String position) {
+    public List<Employee> getEmployeesByPosition(String position) {
         return employeeRepository.findAll()
                 .stream()
                 .filter(employee -> employee.getPosition().equalsIgnoreCase(position))
                 .collect(Collectors.toList());
-    }
-
-    public List<Employee> saveToTXT() {
-        List<Employee> employees = employeeRepository.findAll();
-
-        return employees;
-    }
-
-    public List<Employee> saveToCSV() {
-        List<Employee> employees = employeeRepository.findAll();
-
-        return employees;
     }
 }

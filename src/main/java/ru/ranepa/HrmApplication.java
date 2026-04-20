@@ -21,8 +21,9 @@ public class HrmApplication {
             System.out.println("2. Add employee");
             System.out.println("3. Delete employee by ID");
             System.out.println("4. Find employee by ID");
-            System.out.println("5. Show statistics");
-            System.out.println("6. Exit");
+            System.out.println("5. Find employee by position");
+            System.out.println("6. Show statistics");
+            System.out.println("7. Exit");
             System.out.print("Choose an option: ");
 
             int choice;
@@ -47,49 +48,36 @@ public class HrmApplication {
                     findEmployeeById(scanner, hrmService);
                     break;
                 case 5:
+                    findEmployeeByPosition(scanner, hrmService);
+                    break;
+                case 6:
                     showStatistics(hrmService);
                     break;
-                case 8:
-
                 case 7:
-                    while (true) {
-                        System.out.println("Do you want to save changes before exiting?");
-                        System.out.println("1. No");
-                        System.out.println("2. Yes (txt)");
-                        System.out.println("3. Yes (csv)");
-                        int choiceOut;
-                        try {
-                            choiceOut = Integer.parseInt(scanner.nextLine());
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Enter a number.");
-                            continue;
-                        }
-                        switch (choiceOut) {
-                            case 1:
-                                System.out.println("Goodbye!");
-                                scanner.close();
-                                return;
-                            case 2:
-                                saveToTXT(hrmService);
-                                System.out.println("Goodbye!");
-                                scanner.close();
-                                return;
-                            case 3:
-                                saveToCSV(hrmService);
-                                System.out.println("Goodbye!");
-                                scanner.close();
-                                return;
-                            default:
-                                System.out.println("Unknown menu item.");
-                        }
-                    }
+                    System.out.println("Goodbye!");
+                    scanner.close();
+                    return;
 
-                default:
-                    System.out.println("Unknown menu item.");
             }
 
         }
 
+    }
+
+    private static void findEmployeeByPosition(Scanner scanner, HRMService hrmService) {
+        System.out.print("Enter employee position: ");
+        String position = scanner.nextLine();
+
+        List<Employee> employees = hrmService.getEmployeesByPosition(position);
+
+        if (employees.isEmpty()) {
+            System.out.println("Employee not found.");
+        } else {
+            for (Employee employee : employees) {
+                    System.out.println(employee);
+            }
+
+        }
     }
 
     private static void showAllEmployees(HRMService hrmService) {
@@ -186,15 +174,5 @@ public class HrmApplication {
         } else {
             System.out.println("No employees in system.");
         }
-    }
-
-    private static void saveToTXT(HRMService HRMService) {
-        List<Employee> employees = HRMService.saveToTXT();
-        // Логика сохранения в TXT файл
-    }
-
-    private static void saveToCSV(HRMService HRMService) {
-        List<Employee> employees = HRMService.saveToCSV();
-        // Логика сохранения в CSV файл
     }
 }

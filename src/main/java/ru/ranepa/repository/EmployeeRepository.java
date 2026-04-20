@@ -27,7 +27,20 @@ public class EmployeeRepository {
         return storage.get(id);
     }
 
+    /*
+    public List<Employee> findByPosition(String position) {
+        List<Employee> result = new ArrayList<>();
+        for (Employee e : storage.values()) {
+            if (e.getPosition().equals(position)) {
+                result.add(e);
+            }
+        }
+        return result;
+    }
+    */
     public boolean delete(Long id) {
         return storage.remove(id) != null;
     }
+
+
 }
